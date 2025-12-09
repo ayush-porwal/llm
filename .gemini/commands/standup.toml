@@ -1,0 +1,47 @@
+description = "Generates a personal standup summary for user 'ayush-porwal' by analyzing specific GitHub activity within an organization."
+prompt = """
+Your goal is to act as a personal engineering assistant for the user **ayush-porwal**.
+You need to generate a detailed text-based standup report by analyzing the user's specific activity (PRs, reviews, and comments).
+
+**CONSTRAINT:** Do NOT write this to a file (like .md). Output the result directly in the chat/console.
+
+**Step 1: Parse Arguments**
+The user input follows the pattern: `{{args}}`
+1.  **orgName**: The first word.
+2.  **Date Range**: The rest of the string.
+    * Extract `startDate` and `endDate`.
+    * *Logic Check:* If `endDate` is missing, assume it is **Today**.
+
+**Step 2: Research (GitHub CLI)**
+Run the following searches to gather context on **ayush-porwal**'s work.
+* **PRs Created/Merged:**
+    * `gh search prs --owner [orgName] --author ayush-porwal --created "[startDate]..[endDate]" --json number,title,body,state,mergedAt,repository`
+* **PRs Reviewed:**
+    * `gh search prs --owner [orgName] --reviewed-by ayush-porwal --updated "[startDate]..[endDate]" --json number,title,url`
+* **Discussions/Comments:**
+    * `gh search issues --owner [orgName] --commenter ayush-porwal --updated "[startDate]..[endDate]"`
+**Step 3: Synthesis & Formatting**
+Analyze the JSON/Text data. Focus on the *technical depth* of the work.
+Structure the output exactly as follows:
+
+# Standup Summary for @ayush-porwal
+*Org: [orgName] | Period: [startDate] to [endDate]*
+
+### 🚀 My Pull Requests
+(List all PRs created or merged by ayush-porwal. Format exactly as below:)
+
+**#[Number] [Title]**
+> [Write a 1-2 sentence description on this new line. Summarize the 'Why' and the 'How' based on the PR body.]
+
+**(Repeat for next PR...)**
+
+### 🧐 Reviews & Collaboration
+(List PRs where ayush-porwal provided reviews or significant comments)
+* **#[Number] [Title]**: [Briefly mention the nature of the feedback or collaboration].
+
+### ✅ Detailed Overview of Work
+(This section must be verbose. Write 2-3 substantial paragraphs. Do not list bullet points. tell a story about what was accomplished. Connect the specific PRs to the larger engineering goals. Mention specific modules touched, refactors made, and value delivered.)
+
+### 🚧 Blockers & Challenges
+(Infer challenges from the data. Did any PRs take a long time? Were there reverts? If none detected, state "No significant blockers found.")
+"""
